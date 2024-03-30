@@ -1,38 +1,64 @@
 import * as React from 'react';
-import { View, Button, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Button, Text, ScrollView } from 'react-native';
+import RNFS from 'react-native-fs';
+import { request, check, PERMISSIONS } from 'react-native-permissions';
+import styles from './Styles';
 
 export default function App() {
-    const [n1, setN1] = React.useState('')
-    const [n2, setN2] = React.useState('')
-    const [resultado, setResultado] = React.useState('')
+  const [pausarContinuar, setPausarContinuar] = React.useState("Pausar");
+  const [tempoAtual, setTempoAtual] = React.useState("00:00");
+  const [tempoTotal, setTempoTotal] = React.useState("00:00");
+  const [arquivos, setArquivos] = React.useState([]);
 
-    return(
-        <View style={styles.fundo}>
-            <Text style={[styles.nomeMusica]}>Nome da música</Text>
-            <Button title={"somar"} onPress={()=>{
-                setResultado(parseFloat(n1) + parseFloat(n2))
-            }}/>
-        </View>
-    );
-}
-
-//const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-    fundo: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: "#111111"
-    },
-    nomeMusica: {
-        top: "60%",
-        fontSize: 24,
-        fontWeight: 'normal',
-        color: 'white',
-        position: 'absolute',
-    },
-    botao: {
-        
+  const lerArquivos = async () => {
+    /// Verifica a permissão de áudio
+    const hasAudioPermission = await check(PERMISSIONS.ANDROID.READ_MEDIA_AUDIO);
+    if (hasAudioPermission !== 'granted') {
+      const { status } = await request(PERMISSIONS.ANDROID.READ_MEDIA_AUDIO);
+      if (status !== 'granted') {
+        console.log('Permissão de áudio negada');
+        return;
+      }
     }
-  });
+
+    // Obtém o caminho da pasta de downloads
+    const downloadsDir = RNFS.DownloadDirectoryPath;
+
+    try {
+      const files = await RNFS.readdir(downloadsDir);
+      apenasAudios = [];
+      for (const arquivo of files) {
+        const fullPath = downloadsDir + "/" + arquivo;
+        const stat = await RNFS.stat(fullPath);
+        if(stat.isFile()){
+            apenasAudios.push(arquivo);
+        }
+      }
+      setArquivos(apenasAudios);
+      console.log(apenasAudios);
+    } catch (error) {
+      console.log('Erro ao listar os arquivos:', error);
+    }
+  };
+
+  React.useEffect(() => {
+    lerArquivos();
+  }, []);
+
+  return (
+    <View style={styles.fundo}>
+      <Text style={styles.nomeMusica}>Nome da música</Text>
+      <Button
+        title={pausarContinuar}
+        onPress={() => {
+          if (pausarContinuar === "Pausar") {
+            setPausarContinuar("Continuar");
+          } else {
+            setPausarContinuar("Pausar");//
+          }
+        }}
+      />
+      <Text style={styles.tempoMusica}>{tempoAtual}/{tempoTotal}</Text>
+    </View>
+  );
+}
