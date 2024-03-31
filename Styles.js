@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#111111"
     },
     nomeMusica: {
-        top: "60%",
+        top: "15%",
         fontSize: 24,
         fontWeight: 'normal',
         color: 'white',
