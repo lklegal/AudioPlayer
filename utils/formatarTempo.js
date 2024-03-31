@@ -1,7 +1,7 @@
 const formatarTempo = (tempo) => {
     const tempoF = parseFloat(tempo);
     let minutos = Math.floor(tempoF/60);
-    let segundos = Math.ceil(tempoF - (minutos * 60));
+    let segundos = Math.floor(tempoF - (minutos * 60));
     let horas = Math.floor(minutos / 60);
     minutos -= (horas * 60);
 

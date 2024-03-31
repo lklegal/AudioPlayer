@@ -16,10 +16,17 @@ const styles = StyleSheet.create({
     },
     tempoMusica: {
         top: "65%",
-        fontSize: 10,
+        fontSize: 15,
         fontWeight: 'normal',
         color: 'white',
         position: 'absolute',
+    },
+    botao: {
+        width: 280,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        position: "absolute",
+        color: "#242424"
     }
   });
 
